@@ -12,12 +12,19 @@ module Capybara
     class << self
       attr_accessor :port_number, :pid_file, :kill_timeout, :start_timeout
 
-      def start
+      def start(options = {})
         if @pid.nil?
           kill_old_process
           gem_path   = File.dirname(__FILE__)
           proxy_file = File.join(gem_path, 'webmock', 'config.ru')
-          stdin, stdout, wait_thr = Open3.popen2e({ "PROXY_PORT_NUMBER" => port_number.to_s }, "rackup", proxy_file)
+          stdin, stdout, wait_thr = Open3.popen2e(
+            {
+              "PROXY_PORT_NUMBER" => port_number.to_s,
+              "PROXY_ALLOWED_HOSTS" => options[:allowed_hosts]
+            },
+            "rackup",
+            proxy_file
+          )
           stdin.close
           @stdout = stdout
           @pid = wait_thr[:pid]

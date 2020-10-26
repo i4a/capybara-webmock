@@ -59,7 +59,7 @@ Then in your RSpec configuration:
 RSpec.configure do |config|
   config.before(:each) do |example|
     if example.metadata[:type] == :feature
-      Capybara::Webmock.start
+      Capybara::Webmock.start(allowed_hosts: 'test.localnet,external.service')
     end
   end
 
